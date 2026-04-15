@@ -1,2 +1,2 @@
-"""Core source package for the Apollo DDM project."""
+"""Core source package for the Chimera utility recommendation project."""
 
