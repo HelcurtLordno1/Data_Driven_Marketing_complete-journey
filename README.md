@@ -22,6 +22,13 @@ $$
 
 All components are normalized to the range $[0,1]$. This ensures mathematical consistency and allows transparent weight tuning.
 
+### Implementation Rule
+Treat `src/` as the source of truth for reusable logic.
+
+- Put long transformation, modeling, and scoring code in `src/`.
+- Keep notebooks focused on orchestration, visuals, validation, and insights.
+- Import notebook-ready functions from `src/` instead of duplicating pipeline code inline.
+
 ### Success Metrics
 - Primary: Incremental Precision@5 (items not purchased in training period).
 - Secondary: Projected Incremental Margin Lift vs. Popularity Baseline.
@@ -257,11 +264,11 @@ chimera-utility-recsys/
 │
 ├── src/
 │   ├── __init__.py
-│   ├── data_loader.py
-│   ├── financial_utils.py
+│   ├── data_loader.py                 # Raw-to-processed transaction builders
+│   ├── financial_utils.py             # Price, discount, and margin helpers
 │   ├── recall_engine.py               # MBA + ALS candidate generation
 │   ├── utility_scorer.py              # The U(i,u) function implementation
-│   └── cold_start.py
+│   └── cold_start.py                  # Demographic fallback logic
 │
 ├── reports/
 │   ├── figures/
