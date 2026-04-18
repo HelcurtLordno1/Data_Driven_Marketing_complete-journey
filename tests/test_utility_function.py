@@ -16,6 +16,7 @@ SPEC.loader.exec_module(UTILITY_SCORER)
 build_household_campaign_flags = UTILITY_SCORER.build_household_campaign_flags
 build_promoted_commodity_flags = UTILITY_SCORER.build_promoted_commodity_flags
 calculate_context_score = UTILITY_SCORER.calculate_context_score
+resolve_available_snapshot_week = UTILITY_SCORER.resolve_available_snapshot_week
 score_candidate_set = UTILITY_SCORER.score_candidate_set
 
 
@@ -56,6 +57,27 @@ def test_campaign_and_promotion_flags_are_resolved_from_inputs():
 	promoted = build_promoted_commodity_flags(causal_data, product_lookup, snapshot_week=20)
 	assert set(promoted["COMMODITY_DESC"]) == {"YOGURT", "COFFEE"}
 	assert promoted["item_is_promoted"].all()
+
+
+def test_snapshot_week_falls_back_to_latest_available_causal_week():
+	causal_data = pd.DataFrame(
+		{
+			"PRODUCT_ID": [101, 102],
+			"WEEK_NO": [20, 20],
+			"display": [1, 0],
+			"mailer": ["0", "D"],
+		}
+	)
+	product_lookup = pd.DataFrame(
+		{
+			"PRODUCT_ID": [101, 102],
+			"COMMODITY_DESC": ["YOGURT", "COFFEE"],
+		}
+	)
+
+	assert resolve_available_snapshot_week(causal_data, snapshot_week=21) == 20
+	promoted = build_promoted_commodity_flags(causal_data, product_lookup, snapshot_week=21)
+	assert set(promoted["COMMODITY_DESC"]) == {"YOGURT", "COFFEE"}
 
 
 def test_score_candidate_set_builds_top_5_recommendations():

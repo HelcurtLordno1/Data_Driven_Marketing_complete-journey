@@ -131,6 +131,33 @@ def build_household_campaign_flags(
 	return household_campaigns
 
 
+def resolve_available_snapshot_week(
+	causal_data: pd.DataFrame,
+	snapshot_week: Optional[int] = None,
+) -> Optional[int]:
+	"""Choose the latest available causal week at or before the requested snapshot."""
+	if causal_data.empty or "WEEK_NO" not in causal_data.columns:
+		return None
+
+	available_weeks = (
+		pd.to_numeric(causal_data["WEEK_NO"], errors="coerce")
+		.dropna()
+		.astype(int)
+		.drop_duplicates()
+		.sort_values()
+	)
+	if available_weeks.empty:
+		return None
+	if snapshot_week is None:
+		return int(available_weeks.iloc[-1])
+
+	requested_week = int(snapshot_week)
+	eligible_weeks = available_weeks[available_weeks <= requested_week]
+	if not eligible_weeks.empty:
+		return int(eligible_weeks.iloc[-1])
+	return int(available_weeks.iloc[0])
+
+
 def build_promoted_commodity_flags(
 	causal_data: pd.DataFrame,
 	product_lookup: pd.DataFrame,
@@ -146,7 +173,9 @@ def build_promoted_commodity_flags(
 	if causal.empty:
 		return pd.DataFrame(columns=["COMMODITY_DESC", "item_is_promoted"])
 
-	current_week = int(snapshot_week if snapshot_week is not None else causal["WEEK_NO"].max())
+	current_week = resolve_available_snapshot_week(causal, snapshot_week=snapshot_week)
+	if current_week is None:
+		return pd.DataFrame(columns=["COMMODITY_DESC", "item_is_promoted"])
 	causal = causal[causal["WEEK_NO"] == current_week].copy()
 	if causal.empty:
 		return pd.DataFrame(columns=["COMMODITY_DESC", "item_is_promoted"])
