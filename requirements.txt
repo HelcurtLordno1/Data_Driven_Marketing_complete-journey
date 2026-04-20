@@ -1,6 +1,13 @@
+numpy
 pandas
+scipy
 scikit-learn
 mlxtend
 lifetimes
 implicit
+matplotlib
+plotly
+pyarrow
+packaging
+ipykernel
 powerbiclient
