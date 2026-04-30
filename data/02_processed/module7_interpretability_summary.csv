@@ -1,0 +1,6 @@
+Analysis,Key Finding,Stakeholder Value
+Global Component Importance,Top driver: Relevance (importance=0.1500),Proves which signal drives real purchases beyond utility maths
+Explanation Cards,15 cards for 3 households,Business-readable 'Why this item?' at every recommendation
+Counterfactual Explanation,"'BAG SNACKS' was ranked #5 (utility=0.8239) among all candidates but was not purchased. To reach rank #3, the utility wo…",Shows model is behaviour-driven; auditable & actionable
+Weight Sensitivity (Uplift),Stability: 100% of steps keep rank-1,Demonstrates robustness; tweaking w₂ won't flip results
+Weight Sensitivity (Margin),Stability: 100% of steps keep rank-1,Reassures finance team that margin weighting is not fragile

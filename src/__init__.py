@@ -1,6 +1,19 @@
 """Core source package for the Chimera utility recommendation project."""
 
 from .cold_start import ColdStartRecommender, build_demographic_priors, recommend_for_new_user
+from .recommendation_explainer import (
+	GlobalImportanceResult,
+	ExplanationCard,
+	CounterfactualResult,
+	WeightSensitivityResult,
+	compute_global_component_importance,
+	generate_explanation_card,
+	generate_explanation_cards_for_household,
+	cards_to_dataframe,
+	compute_counterfactual_explanation,
+	weight_sensitivity_analysis,
+	compute_similar_user_pct,
+)
 from .data_loader import get_project_root, load_or_build_master_transactions
 from .financial_utils import calculate_margin, calculate_true_price, normalize_discount_values
 from .module4_validation import (
@@ -72,6 +85,17 @@ except ImportError:
 	save_als_factors = None
 
 __all__ = [
+	"GlobalImportanceResult",
+	"ExplanationCard",
+	"CounterfactualResult",
+	"WeightSensitivityResult",
+	"compute_global_component_importance",
+	"generate_explanation_card",
+	"generate_explanation_cards_for_household",
+	"cards_to_dataframe",
+	"compute_counterfactual_explanation",
+	"weight_sensitivity_analysis",
+	"compute_similar_user_pct",
 	"AlternatingLeastSquares",
 	"CandidateArtifacts",
 	"ColdStartRecommender",
