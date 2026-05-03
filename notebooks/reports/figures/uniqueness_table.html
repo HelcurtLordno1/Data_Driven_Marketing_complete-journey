@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <title>Chimera vs. Standard Recommendation Systems</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --accent: #1f6f78;
+      --accent-soft: #d6ebe8;
+      --line: #d9d4c7;
+    }
+    body {
+      margin: 0;
+      padding: 32px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #fbf8f1 0%, var(--bg) 100%);
+      color: var(--ink);
+    }
+    .page { max-width: 1180px; margin: 0 auto; }
+    header {
+      background: linear-gradient(135deg, #163945 0%, #1f6f78 60%, #4b8f8c 100%);
+      color: white;
+      padding: 28px 32px;
+      border-radius: 24px;
+      box-shadow: 0 14px 36px rgba(31, 111, 120, 0.18);
+    }
+    header h1 { margin: 0 0 10px; font-size: 2.2rem; }
+    header p { margin: 0; max-width: 900px; line-height: 1.55; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      margin-top: 24px;
+      padding: 22px 24px;
+      box-shadow: 0 10px 26px rgba(31, 41, 55, 0.06);
+    }
+    .panel h2 { margin: 0 0 8px; color: var(--accent); }
+    .panel p { margin: 0 0 16px; line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.95rem;
+    }
+    th { background: var(--accent-soft); color: #12363b; }
+    tr:last-child td { border-bottom: none; }
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <header>
+      <h1>Chimera vs. Standard Recommendation Systems</h1>
+      <p>A one-page comparison that frames the project as a production decision system rather than a generic recommender.</p>
+    </header>
+    <section class='panel'>
+<h2>Uniqueness summary</h2>
+<p>How Chimera changes the objective, validation, and operating model.</p>
+<table class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Dimension</th>
+      <th>Standard recsys</th>
+      <th>Chimera</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Objective</td>
+      <td>Maximize proxy relevance or predicted click probability.</td>
+      <td>Maximize incremental retailer margin under utility constraints.</td>
+    </tr>
+    <tr>
+      <td>Scoring logic</td>
+      <td>Single ranking score, often opaque to stakeholders.</td>
+      <td>Weighted sum of relevance, uplift, margin, and context.</td>
+    </tr>
+    <tr>
+      <td>Business control</td>
+      <td>Recommendation quality is discussed after deployment.</td>
+      <td>Margin, promotion context, and habit strength are explicit levers.</td>
+    </tr>
+    <tr>
+      <td>Validation</td>
+      <td>Offline accuracy is the main proof point.</td>
+      <td>Incremental Precision@5, ablation, and simulated A/B lift.</td>
+    </tr>
+    <tr>
+      <td>Operations</td>
+      <td>Model retraining is sometimes ad hoc.</td>
+      <td>Weekly retraining, drift thresholds, and rollback gates are defined.</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+  </div>
+</body>
+</html>
