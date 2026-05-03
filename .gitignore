@@ -22,3 +22,4 @@ data/01_raw/*
 
 data/02_processed/*.parquet
 data/02_processed/*.npz
+*.pdf
