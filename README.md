@@ -343,45 +343,46 @@ Purpose: Segment customers into behavioral archetypes and show how the recommend
 - Source: src/archetypes.py
 - Figures: archetype_radar.html, archetype_performance_bar.html, archetype_case_profiles.pdf
 
-## Module 9: Simulated A/B Test - Proving Incremental Value (Day 14)
+## Module 9: Policy Evaluation - Chimera vs. Popularity Baseline (Day 14)
 
 ### Member 9: Experimentation Analyst and Decision Scientist
-Purpose: Design a realistic A/B test that could be run in production, and simulate its outcome to demonstrate the recommender's financial impact.
+Purpose: Evaluate two real recommendation policies on observed recommendation composition, then translate the result into a budget targeting rule for production planning.
 
 ### Focus Files
 - Module 4 holdout data
-- Module 6 incremental margin estimates
-- Module 8 archetype outputs, if needed for stratification
+- Module 6 margin-shift and recommendation outputs
+- Module 8 archetype assignments for balance checks and stratification
 
 ### Step 9.1: Experimental Design
-- Unit of randomization: household (existing household_key).
-- Primary metric: Incremental Margin per Household (sum of margin of recommended items purchased in the test period - cost if any intervention).
-- Control: Global Popularity Top-5.
-- Treatment: Full Chimera Top-5.
-- Guardrails: Ensure no significant drop in basket size or purchase frequency.
+- Unit of randomization: household_key.
+- Control: Popularity Baseline built from the training window.
+- Treatment: Chimera top-5 recommendations.
+- Primary metric: average normalized margin of the recommended slate per household.
+- Guardrails: preserve a clean 50/50 assignment and report balance across archetypes.
 
-### Step 9.2: Power Analysis
-- Compute required sample size using historical variance of test-period margin.
-- Show that with our 2,500 households we need at least X% lift to achieve 80% power (may be a discussion point).
+### Step 9.2: Statistical Evaluation
+- Compare control and treatment using Welch's t-test.
+- Estimate lift with a bootstrapped 95% confidence interval.
+- Report effect size with Cohen's d and keep the interpretation explicit.
 
-### Step 9.3: Simulated Outcomes
-- Assign the 2,408 eligible households (from Module 4 holdout) randomly 50:50 to control/treatment.
-- Compute per-household incremental margin.
-- Perform Welch's t-test to test significance of difference in means.
-- Construct 95% confidence interval for the lift using bootstrapping (as recommended in Lecture 7).
+### Step 9.3: Power Analysis
+- Estimate the minimum detectable effect from the observed variance.
+- Report what effect sizes are detectable at 80% power with the current sample.
+- Use the result as a practical guide for interpreting the policy comparison.
 
 ### Step 9.4: Budget Allocation Optimization
-- Suppose a campaign budget allows targeting only the top 20% of households with the highest predicted incremental margin (using the calibration model from Module 6).
-- Compare total profit under three strategies: (a) random target, (b) target by highest CLV (ignoring uplift), (c) target by utility-estimated incremental margin.
-- Show the cumulative profit curve.
+- Rank households by incremental margin delta and target the top 20%.
+- Compare targeted vs. random allocation to show where the policy creates the most value.
+- Save the ranked list for downstream campaign planning.
 
 ### Step 9.5: Decision Summary
-- Present a business recommendation like: Deploy Chimera if the estimated lift in margin per household is above $0.20 with p<0.05; this would generate an incremental $4,500 over the campaign period.
+- Present the final recommendation in business terms, with a clear caveat that this measures recommendation composition rather than actual purchases.
 
 ### Deliverables
 - Notebook: 09_simulated_ab_test_budget.ipynb
 - Source: src/ab_test_simulation.py, src/budget_allocation.py
-- Figures: ab_cumulative_profit.html, confidence_interval_lift.html, budget_tradeoff.html
+- Data: module9_ab_test_results.csv, module9_optimal_targeting_top20pct.csv, ab_assignment_mapping.csv
+- Figures: policy_eval_lift_bar.html, policy_eval_cumulative_gain.html, policy_eval_archetype_impact.html
 
 ## Module 10: Production Deployment Roadmap and Executive Dashboard Wireframe (Day 15)
 
@@ -477,6 +478,9 @@ chimera-utility-recsys/
 │       ├── john_smith_case_study.html
 │       ├── margin_shift.html
 │       ├── network_graph_mba.html
+│       ├── policy_eval_archetype_impact.html
+│       ├── policy_eval_cumulative_gain.html
+│       ├── policy_eval_lift_bar.html
 │       ├── system_architecture.html
 │       ├── tradeoff_scatter.html
 │       ├── uniqueness_table.html
