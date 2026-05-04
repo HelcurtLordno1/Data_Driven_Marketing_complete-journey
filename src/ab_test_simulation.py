@@ -9,6 +9,48 @@ import pandas as pd
 from scipy import stats
 
 
+def build_feature_matrix(frame: pd.DataFrame, feature_cols: list[str]) -> pd.DataFrame:
+    """Create a numeric design matrix with simple missing-value handling."""
+    features = frame[feature_cols].copy()
+    for column in features.columns:
+        if features[column].dtype == object or str(features[column].dtype).startswith("category"):
+            features[column] = features[column].fillna("Unknown").astype(str)
+        else:
+            numeric_series = pd.to_numeric(features[column], errors="coerce")
+            features[column] = numeric_series.fillna(numeric_series.median())
+    matrix = pd.get_dummies(features, drop_first=False, dummy_na=True)
+    matrix = matrix.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    return matrix.astype(float)
+
+
+def fit_linear_uplift_model(frame: pd.DataFrame, feature_cols: list[str], target_col: str):
+    """Fit a simple least-squares model and return in-sample predictions."""
+    model_frame = frame[feature_cols + [target_col]].copy()
+    model_frame = model_frame.replace([np.inf, -np.inf], np.nan).dropna(subset=[target_col]).copy()
+    feature_matrix = build_feature_matrix(model_frame, feature_cols)
+    feature_matrix.insert(0, "intercept", 1.0)
+    target = pd.to_numeric(model_frame[target_col], errors="coerce").fillna(0.0).to_numpy(dtype=float)
+    coefficients = np.linalg.pinv(feature_matrix.to_numpy(dtype=float)) @ target
+    fitted_values = feature_matrix.to_numpy(dtype=float) @ coefficients
+    residuals = target - fitted_values
+    total_ss = np.sum((target - np.mean(target)) ** 2)
+    residual_ss = np.sum(residuals ** 2)
+    r_squared = 1 - residual_ss / total_ss if total_ss > 0 else np.nan
+    predictions = pd.Series(np.nan, index=frame.index, dtype=float)
+    predictions.loc[model_frame.index] = fitted_values
+    coefficients_df = pd.DataFrame({
+        "feature": feature_matrix.columns.tolist(),
+        "coefficient": coefficients,
+    })
+    model_summary = {
+        "r_squared": float(r_squared) if pd.notna(r_squared) else np.nan,
+        "rmse": float(np.sqrt(np.mean(residuals ** 2))) if len(residuals) else np.nan,
+        "n_rows": int(len(model_frame)),
+        "n_features": int(len(feature_matrix.columns) - 1),
+    }
+    return predictions, coefficients_df, model_summary
+
+
 def compute_power_analysis(
     historical_margin_data: pd.Series,
     min_detectable_effect: float = 0.10,

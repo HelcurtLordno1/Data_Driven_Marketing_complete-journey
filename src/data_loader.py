@@ -8,7 +8,10 @@ from typing import Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from .financial_utils import normalize_discount_values
+try:
+	from .financial_utils import normalize_discount_values
+except ImportError:
+	from financial_utils import normalize_discount_values
 
 
 def get_project_root(reference_path: Optional[Path] = None) -> Path:
@@ -19,6 +22,15 @@ def get_project_root(reference_path: Optional[Path] = None) -> Path:
 	if reference.name in {"src", "tests", "data", "reports"}:
 		return reference.parent
 	return reference
+
+
+def find_repo_root(start_path: Optional[Path] = None) -> Path:
+	"""Locate the project root by searching upward for the expected folders."""
+	search_root = (start_path or Path.cwd()).resolve()
+	for candidate in [search_root, *search_root.parents]:
+		if (candidate / "src").exists() and (candidate / "data").exists() and (candidate / "notebooks").exists():
+			return candidate
+	return search_root
 
 
 def _is_git_lfs_pointer(file_path: Path) -> bool:
