@@ -1,0 +1,282 @@
+/* ============================================================
+   Project Chimera – Global Stylesheet
+   Dark professional palette with Roboto typography
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* ── Root variables ──────────────────────────────────────── */
+:root {
+  --bg-primary:   #0E1117;
+  --bg-card:      #1B1F28;
+  --bg-card-hover:#212738;
+  --border:       #2B3040;
+  --text-primary: #FFFFFF;
+  --text-muted:   #D1D5DB;
+
+  --accent-relevance: #4F8FF0;
+  --accent-uplift:    #F08F50;
+  --accent-margin:    #50F08F;
+  --accent-context:   #B050F0;
+  --accent-danger:    #F05050;
+  --accent-warning:   #F0C850;
+
+  --radius:   10px;
+  --radius-sm: 6px;
+  --shadow:   0 4px 20px rgba(0,0,0,0.4);
+  --transition: 0.2s ease;
+}
+
+/* ── Global resets ──────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html, body, [data-testid="stAppViewContainer"] {
+  background-color: var(--bg-primary) !important;
+  font-family: 'Roboto', sans-serif !important;
+  color: var(--text-primary) !important;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+  background-color: #131720 !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+[data-testid="stSidebar"] * { color: var(--text-primary) !important; }
+
+/* ── Headings ────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px;
+}
+
+/* ── KPI / Metric cards ──────────────────────────────────── */
+[data-testid="metric-container"] {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 16px 20px !important;
+  box-shadow: var(--shadow) !important;
+  transition: transform var(--transition);
+}
+
+[data-testid="metric-container"]:hover {
+  transform: translateY(-2px);
+}
+
+[data-testid="stMetricLabel"] {
+  color: var(--text-muted) !important;
+  font-size: 0.78rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+[data-testid="stMetricValue"] {
+  font-size: 1.8rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+[data-testid="stMetricDelta"] { font-size: 0.82rem !important; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.stButton > button {
+  background: linear-gradient(135deg, #4F8FF0, #6A5ACD) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em;
+  transition: opacity var(--transition), transform var(--transition) !important;
+}
+
+.stButton > button:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* Download buttons */
+[data-testid="stDownloadButton"] > button {
+  background: linear-gradient(135deg, #50F08F, #38b863) !important;
+  color: #0E1117 !important;
+  font-weight: 700 !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Sliders ─────────────────────────────────────────────── */
+[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"] {
+  background-color: var(--accent-relevance) !important;
+}
+
+/* ── Selectbox / Input ───────────────────────────────────── */
+[data-baseweb="select"] > div,
+[data-baseweb="input"] > div {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Expander ────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* ── Dataframe / Table ───────────────────────────────────── */
+[data-testid="stDataFrame"],
+[data-testid="stTable"] {
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+}
+
+iframe[title="st_aggrid"] { border-radius: var(--radius) !important; }
+
+/* ── Custom card class (used via st.markdown) ────────────── */
+.chimera-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.chimera-card:hover {
+  transform: translateY(-2px);
+  border-color: #3d4a6a;
+}
+
+.chimera-card h3 { margin: 0 0 6px 0; font-size: 1rem; }
+.chimera-card p  { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+
+/* ── Accent badges ───────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.badge-relevance { background: rgba(79,143,240,0.18); color: #4F8FF0; }
+.badge-uplift    { background: rgba(240,143,80,0.18);  color: #F08F50; }
+.badge-margin    { background: rgba(80,240,143,0.18);  color: #50F08F; }
+.badge-context   { background: rgba(176,80,240,0.18);  color: #B050F0; }
+
+/* ── Status dots ─────────────────────────────────────────── */
+.dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.dot-green  { background: #50F08F; box-shadow: 0 0 6px #50F08F; }
+.dot-yellow { background: #F0C850; box-shadow: 0 0 6px #F0C850; }
+.dot-red    { background: #F05050; box-shadow: 0 0 6px #F05050; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* ── Info / Warning boxes ────────────────────────────────── */
+[data-testid="stInfo"]    { background: rgba(79,143,240,0.1) !important; border-left-color: #4F8FF0 !important; }
+[data-testid="stWarning"] { background: rgba(240,200,80,0.1) !important; border-left-color: #F0C850 !important; }
+[data-testid="stSuccess"] { background: rgba(80,240,143,0.1) !important; border-left-color: #50F08F !important; }
+[data-testid="stError"]   { background: rgba(240,80,80,0.1)  !important; border-left-color: #F05050 !important; }
+
+/* ── Tab styles ──────────────────────────────────────────── */
+[data-baseweb="tab-list"] {
+  background: var(--bg-card) !important;
+  border-radius: var(--radius) var(--radius) 0 0 !important;
+  padding: 4px 8px 0 !important;
+  gap: 4px !important;
+}
+
+[data-baseweb="tab"] {
+  color: var(--text-muted) !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+}
+
+[aria-selected="true"][data-baseweb="tab"] {
+  color: var(--text-primary) !important;
+  background: rgba(79,143,240,0.12) !important;
+  border-bottom: 2px solid var(--accent-relevance) !important;
+}
+
+/* ── Header banner ───────────────────────────────────────── */
+.chimera-header {
+  background: linear-gradient(90deg, #0E1117 0%, #151b2a 40%, #0E1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chimera-header .title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #4F8FF0, #B050F0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Gauge visual (HTML in st.markdown) ──────────────────── */
+.gauge-outer {
+  width: 100%; height: 10px;
+  background: var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.gauge-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+/* ── Utility bar ──────────────────────────────────────────── */
+.util-bar-row {
+  display: flex;
+  gap: 2px;
+  height: 12px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+.util-bar-seg { height: 100%; }
+ 
+ /* ── Streamlit Widget Overrides ─────────────────────────── */
+ label, .stMarkdown p, .stCaption {
+   color: var(--text-muted) !important;
+ }
+ 
+ /* Force input labels and help icons to be brighter */
+ [data-testid="stWidgetLabel"] p {
+   color: var(--text-primary) !important;
+   font-weight: 500 !important;
+ }
+ 
+ [data-testid="stHeader"] {
+   background-color: rgba(14, 17, 23, 0.8) !important;
+ }
+ 
+ /* Placeholder text in inputs */
+ ::placeholder {
+   color: #5C6370 !important;
+   opacity: 1;
+ }
+ 
+ .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+   color: var(--text-primary) !important;
+ }

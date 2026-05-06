@@ -1,0 +1,6 @@
+# Chimera UI – additional Streamlit dependencies
+# (project root requirements.txt covers numpy, pandas, plotly, etc.)
+
+streamlit>=1.36.0
+plotly>=5.18.0
+pyarrow>=14.0.0
