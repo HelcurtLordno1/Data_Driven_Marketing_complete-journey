@@ -1,5 +1,103 @@
 ﻿# Project Chimera: A Calibrated Utility-Based Recommendation Engine for Incremental Grocery Margin
 
+## Quick start (local)
+
+### Prerequisites
+- Python 3.9+
+- (Recommended) a virtual environment (`venv`)
+
+### Install
+
+Core analytics + notebooks:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Streamlit UI (adds Streamlit and a few UI-only deps):
+
+```powershell
+pip install -r chimera-ui/requirements_ui.txt
+```
+
+### Generate / verify processed artifacts
+
+Most of the project consumes artifacts in `data/02_processed/`. To rebuild them, run the notebooks in order (see the **Notebooks** section below). If your processed files are already present, you can skip notebook execution.
+
+### Launch the Streamlit dashboard
+
+Run from the project root:
+
+```powershell
+streamlit run chimera-ui/app.py
+```
+
+The UI will read from `data/02_processed/` (and will gracefully show empty states if some files are missing).
+
+## Repository layout
+
+This repository is split into three practical layers:
+
+- `src/` — reusable, testable logic (scoring, recall, validation, explainability, etc.)
+- `notebooks/` — orchestration, analysis narratives, charts, and export steps
+- `chimera-ui/` — executive decision-support UI (multi-page Streamlit app)
+
+Key folders:
+
+- `data/01_raw/` — source CSVs (transactions, products, demographics, campaigns)
+- `data/02_processed/` — generated artifacts (parquet/npz/csv) consumed by notebooks, scripts, and the UI
+- `reports/` — exported HTML reports/figures (small set of examples committed)
+- `scripts/` — small CLIs/utilities (e.g., report-metric collection)
+- `tests/` — unit tests for core `src/` logic
+
+## Data artifacts used by the UI
+
+The UI loads these files from `data/02_processed/` (when present):
+
+- `top5_recommendations_module3.csv`
+- `candidate_set_module3_scored.csv` (large; only loaded by some pages)
+- `module8_archetype_assignments.csv`, `module8_archetype_summary.csv`
+- `module4_ablation_summary.csv`
+- `commodity_margin.csv`
+- `module6_*.csv` (basket impact metrics)
+- `module7_interpretability_summary.csv`
+- `module9_*.csv` (policy evaluation + targeting)
+
+## Notebooks (recommended run order)
+
+The notebooks are designed to be run sequentially; each writes artifacts into `data/02_processed/`:
+
+1. `01_ground_truth_data_model.ipynb` — builds `master_transactions*.parquet` and baseline KPIs
+2. `01b_exploratory_data_analysis.ipynb` — optional EDA
+3. `02_candidate_generation_mba_als.ipynb` — MBA + ALS recall and candidate set
+4. `03_utility_function_ranking.ipynb` — scores candidates and writes `top5_recommendations_module3.csv`
+5. `04_ablation_study_validation.ipynb` — offline validation + ablation summary
+6. `05_cold_start_rules.ipynb` — cold-start rules and fallback logic
+7. `06_basket_behavior_impact.ipynb` — basket impact / margin shift exports (module6_* files)
+8. `07_interpretability_explanation.ipynb` — interpretability outputs + example HTML exports
+9. `08_customer_archetypes.ipynb` — archetype assignments + summaries
+10. `09_simulated_ab_test_budget.ipynb` — simulated policy eval + targeting tables
+11. `10_production_roadmap.ipynb` — production roadmap (mostly narrative)
+
+## Scripts
+
+Collect a compact JSON bundle of extended report metrics (writes into `data/02_processed/`):
+
+```powershell
+python scripts/collect_report_metrics.py
+```
+
+## Tests
+
+Tests target the `src/` layer. If you don't already have `pytest` in your environment:
+
+```powershell
+pip install pytest
+pytest -q
+```
+
 ## Project Charter and Core Principle
 
 ### Selected Problem
@@ -206,7 +304,7 @@ Expected narrative for report:
 ### Member 5: BI Architect and Creative Lead
 Purpose: Translate the utility function into a compelling, defensible business story.
 
-Focus: Power BI Dashboard and Final Report PDF.
+Focus: Executive decision-support dashboard (Streamlit UI in `chimera-ui/`) and optional BI-style reporting.
 
 ### Step 5.1: The Deconfounded Case Study (The John Smith Walkthrough)
 - Action: Select a specific household_key.
@@ -218,7 +316,7 @@ Focus: Power BI Dashboard and Final Report PDF.
     - Artisan Bread: Relevance=0.70, Uplift=0.90, Margin=0.85, Context=0.70, Total=0.76
   - Conclusion: Artisan Bread wins because it represents a high-margin, non-habitual opportunity.
 
-### Step 5.2: Dashboard Specifications (Power BI)
+### Step 5.2: Dashboard Specifications (Streamlit / Power BI)
 - Screen 1: Utility Decomposition (The Why Screen)
   - Visual: Stacked bar chart for top 5 recommendations of a selected user.
   - Bars show contribution of Relevance, Uplift, Margin, and Context to final score.
@@ -270,7 +368,7 @@ Purpose: Quantify how the recommender changes real purchase patterns, not just o
 ### Deliverables
 - Notebook: 06_basket_behavior_impact.ipynb
 - Source: src/basket_impact.py (functions for pre-post comparison, category expansion)
-- Figures: basket_diversity_comparison.html, margin_shift.html, tradeoff_scatter.html
+- Data exports: data/02_processed/module6_*.csv
 
 ## Module 7: Interpretability and Trust - Why We Recommended This (Day 12)
 
@@ -307,7 +405,7 @@ Purpose: Make the black-box utility function transparent, building trust with bu
 ### Deliverables
 - Notebook: 07_interpretability_explanation.ipynb
 - Source: src/recommendation_explainer.py
-- Figures: global_importance_bar.html, example_explanation_cards.png, weight_sensitivity_slope.html
+- Reports (example exports): reports/global_importance_bar.html, reports/example_explanation_cards.html, reports/weight_sensitivity_slope.html
 
 ## Module 8: Customer-Centric Personalization - The Archetype Lens (Day 13)
 
@@ -341,7 +439,7 @@ Purpose: Segment customers into behavioral archetypes and show how the recommend
 ### Deliverables
 - Notebook: 08_customer_archetypes.ipynb
 - Source: src/archetypes.py
-- Figures: archetype_radar.html, archetype_performance_bar.html, archetype_case_profiles.pdf
+- Data exports: data/02_processed/module8_archetype_assignments.csv, data/02_processed/module8_archetype_summary.csv
 
 ## Module 9: Policy Evaluation - Chimera vs. Popularity Baseline (Day 14)
 
@@ -382,7 +480,7 @@ Purpose: Evaluate two real recommendation policies on observed recommendation co
 - Notebook: 09_simulated_ab_test_budget.ipynb
 - Source: src/ab_test_simulation.py, src/budget_allocation.py
 - Data: module9_ab_test_results.csv, module9_optimal_targeting_top20pct.csv, ab_assignment_mapping.csv
-- Figures: policy_eval_lift_bar.html, policy_eval_cumulative_gain.html, policy_eval_archetype_impact.html
+- Data exports: data/02_processed/module9_*.csv
 
 ## Module 10: Production Deployment Roadmap and Executive Dashboard Wireframe (Day 15)
 
@@ -418,38 +516,55 @@ Purpose: Outline a concrete production implementation and design the monitoring 
 ### Deliverables
 - Notebook: 10_production_roadmap.ipynb (largely markdown with architecture diagrams)
 - Source: src/deployment_plan.py (possibly a config file or JSON schema for the API)
-- Figures: system_architecture.html, dashboard_wireframe.pdf, uniqueness_table.html
+- Deliverable: an implementation roadmap and dashboard wireframe narrative
 
-## Revised Repository Structure
-
-The extended project keeps the original core layout and adds the new analysis modules below.
+## Repository structure (current)
 
 ```text
-chimera-utility-recsys/
+project_ddm_complete_journey/
 ├── README.md
 ├── requirements.txt
-│
+├── chimera-ui/
+│   ├── app.py
+│   ├── README_UI.md
+│   ├── requirements_ui.txt
+│   ├── assets/
+│   │   └── style.css
+│   ├── pages/
+│   │   ├── 01_Executive_Dashboard.py
+│   │   ├── 02_Household_Explorer.py
+│   │   ├── 03_Archetype_Lens.py
+│   │   ├── 04_Weight_Simulator.py
+│   │   ├── 05_Counterfactuals.py
+│   │   ├── 06_Policy_Evaluation.py
+│   │   ├── 07_Model_Health.py
+│   │   ├── 08_Feedback_Review.py
+│   │   └── 09_Campaign_Export.py
+│   └── utils/
+│       ├── data_loader.py
+│       ├── recompute.py
+│       ├── scenario_io.py
+│       ├── state_manager.py
+│       └── ui_components.py
 ├── data/
 │   ├── 01_raw/
 │   └── 02_processed/
-│       ├── association_rules.csv
+│       ├── master_transactions.parquet
+│       ├── master_transactions_all.parquet
+│       ├── master_transactions_organic_only.parquet
 │       ├── candidate_set_module2.csv
 │       ├── candidate_set_module3_scored.csv
-│       ├── commodity_margin.csv
-│       ├── filtered_items_log.csv
-│       ├── item_factors.npz
-│       ├── master_transactions_all.parquet
-│       ├── master_transactions_organic.parquet
-│       ├── module4_ablation_summary.csv
-│       ├── module5_case_study_comparison.csv
-│       ├── module5_recommendation_simulator.csv
 │       ├── top5_recommendations_module3.csv
-│       ├── user_context_features.parquet
-│       ├── user_factors.npz
-│       └── user_item_matrix.npz
-│
+│       ├── commodity_margin.csv
+│       ├── module4_ablation_summary.csv
+│       ├── module6_*.csv
+│       ├── module7_interpretability_summary.csv
+│       ├── module8_archetype_*.csv
+│       ├── module9_*.csv
+│       └── (other parquet/npz/csv artifacts)
 ├── notebooks/
 │   ├── 01_ground_truth_data_model.ipynb
+│   ├── 01b_exploratory_data_analysis.ipynb
 │   ├── 02_candidate_generation_mba_als.ipynb
 │   ├── 03_utility_function_ranking.ipynb
 │   ├── 04_ablation_study_validation.ipynb
@@ -459,34 +574,13 @@ chimera-utility-recsys/
 │   ├── 08_customer_archetypes.ipynb
 │   ├── 09_simulated_ab_test_budget.ipynb
 │   └── 10_production_roadmap.ipynb
-│
 ├── reports/
+│   ├── example_explanation_cards.html
+│   ├── global_importance_bar.html
+│   ├── weight_sensitivity_slope.html
 │   └── figures/
-│       ├── ab_cumulative_profit.html
-│       ├── ablation_lift_chart.html
-│       ├── ablation_precision_distribution.html
-│       ├── ablation_proof_screen.html
-│       ├── ablation_relative_lift.html
-│       ├── archetype_case_profiles.pdf
-│       ├── archetype_performance_bar.html
-│       ├── archetype_radar.html
-│       ├── basket_diversity_comparison.html
-│       ├── confidence_interval_lift.html
-│       ├── dashboard_wireframe.pdf
-│       ├── example_explanation_cards.png
-│       ├── global_importance_bar.html
-│       ├── john_smith_case_study.html
-│       ├── margin_shift.html
-│       ├── network_graph_mba.html
-│       ├── policy_eval_archetype_impact.html
-│       ├── policy_eval_cumulative_gain.html
-│       ├── policy_eval_lift_bar.html
-│       ├── system_architecture.html
-│       ├── tradeoff_scatter.html
-│       ├── uniqueness_table.html
-│       ├── utility_decomposition.html
-│       └── weight_sensitivity_slope.html
-│
+├── scripts/
+│   └── collect_report_metrics.py
 ├── src/
 │   ├── __init__.py
 │   ├── ab_test_simulation.py
@@ -497,17 +591,17 @@ chimera-utility-recsys/
 │   ├── data_loader.py
 │   ├── deployment_plan.py
 │   ├── financial_utils.py
+│   ├── module4_validation.py
+│   ├── module5_reporting.py
 │   ├── recall_engine.py
 │   ├── recommendation_explainer.py
 │   └── utility_scorer.py
-│
 └── tests/
+    ├── test_archetypes.py
+    ├── test_deployment_plan.py
     ├── test_normalization.py
-    ├── test_utility_function.py
-    └── test_recommendation_explainer.py
+    └── test_utility_function.py
 ```
-
-This extension keeps every analysis directly relevant to the recommendation system, while adding validation, transparency, personalization, and business readiness. The final report now contains a complete narrative from design to production, with rigorous evidence at each step.
 
 
 
